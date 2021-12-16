@@ -7,7 +7,7 @@ import Contenedor from './class/manager.js';
 import {Server} from 'socket.io';
 import __dirname from './utils.js';
 import {authMiddle, fechaActual} from './utils.js'
-
+import bodyParser from 'body-parser';
 const manager=new Contenedor();
 
 const app= express();
@@ -27,6 +27,8 @@ export const admin= true;
 
 /*PARA EL METODO POST, DEBO CONFIGURAR QUE RECIBE MI APP*/
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(express.urlencoded({extended:true}));
 app.use((req,res,next)=>{
     req.auth=admin;

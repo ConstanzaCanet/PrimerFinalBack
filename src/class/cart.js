@@ -15,8 +15,13 @@ class Cart {
         let largo = Number(objeticosA.length)
         let arrayN = objeticosA[largo-1].id+1;
         let id= arrayN;
+        
+        if (Object.keys(body).length !== 0) {
             body = Object.assign({id:id},{timestamp:Date.now()},{productos:[body]})
-            const objeticosN=[...objeticosA, body];
+        }else{
+            body = Object.assign({id:id},{timestamp:Date.now()},{productos:[]})
+        }
+        const objeticosN=[...objeticosA, body];
         try{
         await fs.promises.writeFile(proURL,JSON.stringify(objeticosN,null,2));
         return {status:"success",message:`carrito con numero de tiket: ${body.id}`}
@@ -26,8 +31,13 @@ class Cart {
         
         }catch{
         //El archivo no existe, entonces hay que crearlo.
-        body = Object.assign({timestamp:Date.now()},{productos:[body]})
-        body = Object.assign({id:0}, body)
+        if (Object.keys(body).length !== 0) {
+            body = Object.assign({timestamp:Date.now()},{productos:[body]})
+            body = Object.assign({id:0}, body)
+            
+        }else{
+            body = Object.assign({id:0}, {timestamp:Date.now()},{productos:[]})       
+        }
         try{
         await fs.promises.writeFile(proURL,JSON.stringify([body],null,2))
         return {status:"success",message:`carrito con numero de tiket: ${body.id}`}
@@ -51,7 +61,7 @@ class Cart {
     }
 
     /*Actualizar los elementos del carrito --> POST POR ID DE CARRITO*/
-    async postCartId(cartId,body){
+    async postCartId(cartId,productId){
         try {
             let data = await fs.promises.readFile(proURL,'utf-8')
             let carroP = JSON.parse(data);
@@ -61,10 +71,11 @@ class Cart {
                 return {status:"success", message:'El carrito solicitado no se encuentra'}
             }else{
                 let carroX= carroP[indexBuscado];
-                if (carroX.productos.find(element=> element.id===body.id)) {
+                if (carroX.productos.find(element=> element.id===productId)) {
                     return {status:"success", message:"Ese producto ya se encuentra en el carro"}
                 }else{
-                    carroX.productos.push(body)
+
+                    carroX.productos.push(productId)
                 }
                 }
 
